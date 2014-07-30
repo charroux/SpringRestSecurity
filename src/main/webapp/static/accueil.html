@@ -1,0 +1,166 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+<title>Insert title here</title>
+</head>
+<body>
+
+<script type="text/javascript" src="jquery.min.js"></script>  
+
+<div class="main"></div>
+
+<div class="productsList"></div>
+
+<div class="product"></div>
+
+<script type="text/javascript">
+
+$(document).ready(function() {
+	
+	var json = getEntryPoint();
+	displayEntryPoint(json);
+	
+	$('.main').on('click', '[class=productsListAnchor]', function (event){
+		event.preventDefault();
+		var url = $(this).attr('href');
+		var productsJSon = getProducts(url);
+		displayProductsList(productsJSon);
+
+	});
+	
+	$('.productsList').on('click', '[class=productAnchor]', function (event){
+		event.preventDefault();
+		var url = $(this).attr('href');
+		var productJSon = getProduct(url);
+		displayProduct(productJSon);
+	});
+	
+	$('.product').on('click', '[class=changeProductAnchor]', function (event){
+		event.preventDefault();
+		var url = $(this).attr('href');
+		var productJson = getProduct(url);
+		productJson.name = $('[class=nameInput]').val();
+		changeProduct(url, productJson)
+		displayProduct(productJson);
+	});
+	
+	$('.product').on('click', '[class=deleteProductAnchor]', function (event){
+		event.preventDefault();
+		var url = $(this).attr('href');
+		deleteProduct(url);
+		var json = getEntryPoint();
+		var entryPointHref;
+		$.each( json, function( key, val ) {
+			  $.each( val, function( key1, val1 ) {
+				  if(val1.rel != "self"){
+					  entryPointHref = val1.href;  
+				  } 
+			  })	  
+			})
+		var productsJSon = getProducts(entryPointHref);
+		displayProductsList(productsJSon);
+	});
+
+	function displayEntryPoint(json){
+		$('.main').empty();
+		$('.productsList').empty();
+		$('.product').empty();
+		$.each( json.links, function( key, val ) {
+			  if(val.rel != "self"){
+				  $('.main').append("<a class=\"productsListAnchor\" href=\"" + val.href + "\">" + val.rel + "</a><br/>");   
+			  }  
+		  })
+	}
+	
+	function displayProductsList(productsJSon){
+		$('.productsList').empty();
+		$('.product').empty();
+		$.each( productsJSon, function( key, val ) {
+			  $.each( val, function( key1, val1 ) {
+				  if(val1.rel != "self"){
+					  $('.productsList').append("<a class=\"productAnchor\" href=\"" + val1.href + "\">" + val1.rel + "</a><br/>");  
+				  } 
+			  })	  
+			})
+	}
+	
+	function displayProduct(productJSon){
+		$('.product').empty();
+		$('.product').append("Name's product: <input class=\"nameInput\" type=\"text\" value=\"" + productJSon.name + "\" /> <a class=\"deleteProductAnchor\" href=\"" + productJSon.links[0].href + "\">delete</a>"  + " <a class=\"changeProductAnchor\" href=\"" + productJSon.links[0].href + "\">change</a><br/>");
+	}
+	
+	function getEntryPoint(){
+		var json;
+		var uri = "http://127.0.0.1:8081/SpringRestSecurity/site";
+		$.ajax({							// get possible relations and related URI
+			  url: uri,
+			  dataType: 'json',
+			  async: false,
+			  type: 'GET',
+			  success: function(data) {
+				  json = data;
+				}
+			});
+		return json;
+	}
+	
+	function getProducts(uri){
+		var productsJSon;
+		$.ajax({							
+			  url: uri,
+			  dataType: 'json',
+			  async: false,
+			  type: 'GET',
+			  success: function(data) {
+				  productsJSon = data;
+				}
+			});
+		return productsJSon;
+	}
+	
+	function getProduct(uri){
+		var productJSon;
+		$.ajax({							
+			  url: uri,
+			  dataType: 'json',
+			  async: false,
+			  type: 'GET',
+			  success: function(data) {
+				  productJSon = data;
+			}
+		});
+		return productJSon;
+	}
+	
+	function deleteProduct(uri){
+		var productJSon = getProduct(uri);
+		$.ajax({							
+			  url: uri,
+			  data: JSON.stringify(productJSon),
+			  contentType: "application/json; charset=utf-8",
+			  type: 'DELETE',
+			  async: false,
+			  success: function(data) {   
+				  //$('.productsList').remove();
+			}
+		});
+	}
+	
+	function changeProduct(uri, productJSon){
+		$.ajax({							
+			  url: uri,
+			  data: JSON.stringify(productJSon),
+			  contentType: "application/json; charset=utf-8",
+			  type: 'PUT',
+			  async: false,
+			  success: function(data) {   
+				  //$('.productsList').remove();
+			}
+		});
+	}
+});
+
+</script>
+
+</body>
+</html>

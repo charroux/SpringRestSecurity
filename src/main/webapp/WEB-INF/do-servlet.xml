@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+xmlns:aop="http://www.springframework.org/schema/aop"
+xmlns:context="http://www.springframework.org/schema/context"
+xmlns:tx="http://www.springframework.org/schema/tx"
+xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+xmlns:sec="http://www.springframework.org/schema/security"
+xsi:schemaLocation="http://www.springframework.org/schema/aop
+http://www.springframework.org/schema/aop/spring-aop.xsd
+http://www.springframework.org/schema/beans
+http://www.springframework.org/schema/beans/spring-beans.xsd
+http://www.springframework.org/schema/context
+http://www.springframework.org/schema/context/spring-context.xsd
+http://www.springframework.org/schema/tx
+http://www.springframework.org/schema/tx/spring-tx.xsd
+http://www.springframework.org/schema/security 
+http://www.springframework.org/schema/security/spring-security.xsd">
+
+
+<context:annotation-config/>
+
+
+ <bean id="siteController" class="org.univ.RestController">
+</bean>
+
+
+<bean class="org.springframework.web.servlet.mvc.annotation.AnnotationMethodHandlerAdapter">
+	<property name="messageConverters">
+       <list>
+           <ref bean="jsonConverter" />
+       </list>
+   </property> 
+</bean>
+
+ <bean id="jsonConverter" 
+            class="org.springframework.http.converter.json.MappingJacksonHttpMessageConverter">
+   <property name="supportedMediaTypes" value="application/json" />
+</bean>
+
+<!-- Security -->
+
+<sec:http create-session="stateless" entry-point-ref="digestEntryPoint">
+   <sec:intercept-url pattern="/site/product/**" method="PUT" access="ROLE_USER" /> 
+   <sec:intercept-url pattern="/site/product/**" method="DELETE" access="ROLE_ADMIN" />
+ 
+   <sec:http-basic />
+   <sec:custom-filter ref="digestFilter" after="BASIC_AUTH_FILTER" />
+</sec:http>
+ 
+<bean id="digestFilter" class=
+ "org.springframework.security.web.authentication.www.DigestAuthenticationFilter">
+   <property name="userDetailsService" ref="userService" />
+   <property name="authenticationEntryPoint" ref="digestEntryPoint" />
+</bean>
+ 
+<bean id="digestEntryPoint" class=
+ "org.springframework.security.web.authentication.www.DigestAuthenticationEntryPoint">
+   <property name="realmName" value="login as a user to put or login as admin to delete. User's login: user, user's password: user, admin's login: admin, admin's password:admin"/>
+   <property name="key" value="acegi" />
+</bean>
+ 
+<sec:authentication-manager>
+   <sec:authentication-provider>
+      <sec:user-service id="userService">
+         <sec:user name="admin" password="admin" authorities="ROLE_ADMIN" />
+         <sec:user name="user" password="user" authorities="ROLE_USER" />
+      </sec:user-service>
+   </sec:authentication-provider>
+</sec:authentication-manager>
+</beans>
