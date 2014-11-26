@@ -45,8 +45,11 @@ http://www.springframework.org/schema/security/spring-security.xsd">
  
    <sec:http-basic />
    <sec:custom-filter ref="digestFilter" after="BASIC_AUTH_FILTER" />
+   
+<!--    <sec:logout invalidate-session="true" -->
+<!--             logout-success-url="/static/accueil.html" logout-url="/site/logout" /> -->
 </sec:http>
- 
+
 <bean id="digestFilter" class=
  "org.springframework.security.web.authentication.www.DigestAuthenticationFilter">
    <property name="userDetailsService" ref="userService" />
