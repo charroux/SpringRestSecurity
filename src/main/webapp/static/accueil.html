@@ -18,10 +18,6 @@
 $(document).ready(function() {
 	
 	var json = getEntryPoint();
-<<<<<<< HEAD
-	alert(json);
-=======
->>>>>>> fe6b251c38e2c3b05c17b95f641554de7abd2b6c
 	displayEntryPoint(json);
 	
 	$('.main').on('click', '[class=productsListAnchor]', function (event){
@@ -65,19 +61,12 @@ $(document).ready(function() {
 		displayProductsList(productsJSon);
 	});
 
-<<<<<<< HEAD
-	function displayEntryPoint(json1){
-		$('.main').empty();
-		$('.productsList').empty();
-		$('.product').empty();
-		$.each( json1.links, function( key, val ) {
-=======
+
 	function displayEntryPoint(json){
 		$('.main').empty();
 		$('.productsList').empty();
 		$('.product').empty();
 		$.each( json.links, function( key, val ) {
->>>>>>> fe6b251c38e2c3b05c17b95f641554de7abd2b6c
 			  if(val.rel != "self"){
 				  $('.main').append("<a class=\"productsListAnchor\" href=\"" + val.href + "\">" + val.rel + "</a><br/>");   
 			  }  
