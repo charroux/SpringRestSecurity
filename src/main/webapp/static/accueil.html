@@ -62,11 +62,11 @@ $(document).ready(function() {
 	});
 
 
-	function displayEntryPoint(json){
+	function displayEntryPoint(json1){
 		$('.main').empty();
 		$('.productsList').empty();
 		$('.product').empty();
-		$.each( json.links, function( key, val ) {
+		$.each( json1.links, function( key, val ) {
 			  if(val.rel != "self"){
 				  $('.main').append("<a class=\"productsListAnchor\" href=\"" + val.href + "\">" + val.rel + "</a><br/>");   
 			  }  
